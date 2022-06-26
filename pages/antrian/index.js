@@ -33,8 +33,12 @@ export default function index() {
   };
 
   const getDataAntrian = async () => {
-    const response = await axios.get("/api/queue");
-    setDataAntrian(response.data.data);
+    try {
+      const response = await axios.get("/api/queue");
+      setDataAntrian(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -60,7 +64,7 @@ export default function index() {
           </div>
         </div>
         <div className="bg-blue-500 w-full h-full">
-          <div className="px-5 flex -mt-10 h-full">
+          <div className="px-5 flex  -mt-10 h-full">
             <div className="px-3 w-3/5 h-5/6">
               <div className="bg-gray-500 mt-3 h-2/6 rounded-xl">
                 <img

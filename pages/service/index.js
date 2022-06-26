@@ -21,13 +21,13 @@ export default function Home() {
       name: "AKSI",
       cell: (row) => (
         <button
-          className="bg-blue-100 hover:bg-blue-300 text-xs p-2 px-3"
+          className="bg-red-500 text-white rounded hover:bg-blue-300 text-xs p-2 px-3"
           id={row.id}
           onClick={() => {
             alert(row.id);
           }}
         >
-          Lihat
+          Hapus
         </button>
       ),
     },

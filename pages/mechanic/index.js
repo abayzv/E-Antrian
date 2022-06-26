@@ -6,7 +6,6 @@ import { getMechanic } from "../../store/mechanic";
 
 export default function Home() {
   const { contents } = useRecoilValueLoadable(getMechanic);
-  console.log(contents);
   return (
     <Layout middleware="auth" title="Kendaraan">
       <Container>
@@ -22,10 +21,10 @@ export default function Home() {
           {Array.isArray(contents) ? (
             contents.map((item) => {
               return (
-                <div className="w-1/4 p-1">
+                <div key={item.id} className="w-1/4 p-1">
                   <div className="bg-white shadow-md p-2 rounded relative">
                     <img
-                      className="w-full"
+                      className="w-full h-40 object-cover"
                       src={`http://localhost:8000/${item.imageUrl}`}
                     />
                     <div

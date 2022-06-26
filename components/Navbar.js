@@ -53,9 +53,14 @@ export default function Navbar() {
                 Mechanic
               </a>
             </Link>
+            <Link href="/queue">
+              <a className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200">
+                Antrian
+              </a>
+            </Link>
           </div>
           {authUser.contents && authUser.state === "hasValue" ? (
-            <div className="flex items-center">
+            <div className="flex items-center z-50">
               <Popover className="relative">
                 {({ open }) => (
                   <>
