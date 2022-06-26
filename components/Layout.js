@@ -17,7 +17,7 @@ const Loader = () => {
           xmlnsXlink="http://www.w3.org/1999/xlink"
           style={{
             margin: "auto",
-            background: "rgb(255, 255, 255)",
+            background: "none",
             display: "block",
             shapeRendering: "auto",
           }}

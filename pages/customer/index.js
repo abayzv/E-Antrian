@@ -6,15 +6,18 @@ import DataTable from "react-data-table-component";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toaster from "toasted-notes";
+import { authUserState } from "../../store/auth";
 
 export default function Home() {
   const [customer, setCustomer] = useState([]);
-
+  const authUser = useRecoilValueLoadable(authUserState);
   const getCustomer = async () => {
-    const response = await axios.get("/api/customer");
-    if (response) {
-      setCustomer(response.data.data);
-    }
+    try {
+      const response = await axios.get("/api/customer");
+      if (response) {
+        setCustomer(response.data.data);
+      }
+    } catch (error) {}
   };
 
   const Modal = () => {
@@ -29,18 +32,25 @@ export default function Home() {
 
     const handleSave = async () => {
       setBtnLoading(true);
-      try {
-        const response = await axios.post("/api/customer", data);
-        if (response) {
-          getCustomer();
-          setBtnLoading(false);
-          toaster.notify(response.data.message, {
+      if (authUser?.contents.username == "admin") {
+        try {
+          const response = await axios.post("/api/customer", data);
+          if (response) {
+            getCustomer();
+            setBtnLoading(false);
+            toaster.notify(response.data.message, {
+              position: "bottom-right",
+            });
+          }
+        } catch (r) {
+          setErrors(r.response.data.errors);
+          toaster.notify(r.response.data.message, {
             position: "bottom-right",
           });
+          setBtnLoading(false);
         }
-      } catch (r) {
-        setErrors(r.response.data.errors);
-        toaster.notify(r.response.data.message, {
+      } else {
+        toaster.notify("Mohon maaf fungsi ini di batasi untuk user tertentu", {
           position: "bottom-right",
         });
         setBtnLoading(false);
@@ -55,7 +65,6 @@ export default function Home() {
           setData(newData);
         }
       });
-      console.log(data);
     };
 
     return (
@@ -65,7 +74,7 @@ export default function Home() {
           type="button"
           onClick={() => setShowModal(true)}
         >
-          Tambah Servis
+          Tambah Pelanggan
         </button>
         {showModal ? (
           <>
@@ -195,16 +204,23 @@ export default function Home() {
 
     const handleDelete = async () => {
       setBtnLoading(true);
-      try {
-        const response = await axios.delete(`/api/customer/${props.id}`);
-        if (response) {
-          getCustomer();
+      if (authUser?.contents.username == "admin") {
+        try {
+          const response = await axios.delete(`/api/customer/${props.id}`);
+          if (response) {
+            getCustomer();
+            setBtnLoading(false);
+            toaster.notify(response.data.message, {
+              position: "bottom-right",
+            });
+          }
+        } catch (r) {
           setBtnLoading(false);
-          toaster.notify(response.data.message, {
-            position: "bottom-right",
-          });
         }
-      } catch (r) {
+      } else {
+        toaster.notify("Mohon maaf fungsi ini di batasi untuk user tertentu", {
+          position: "bottom-right",
+        });
         setBtnLoading(false);
       }
     };
@@ -353,7 +369,7 @@ export default function Home() {
       <Container>
         <div className="p-3 shadow-md bg-white rounded mb-5">
           <div className="px-3 flex font-semibold items-center justify-between w-full">
-            <h1>Daftar Customer</h1>
+            <h1>Daftar Pelanggan</h1>
             <Modal />
           </div>
         </div>

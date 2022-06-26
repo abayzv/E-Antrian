@@ -10,11 +10,13 @@ import { getVehicle } from "../../store/vehicle";
 import { getService } from "../../store/service";
 import { getMechanic } from "../../store/mechanic";
 import toaster from "toasted-notes";
+import { authUserState } from "../../store/auth";
 
 export default function Home() {
   const [contents, setContents] = useState([]);
   const data = useRecoilValueLoadable(getQueue);
   const [isLoading, setLoading] = useState(false);
+  const authUser = useRecoilValueLoadable(authUserState);
 
   const pad = (number, digits) => {
     return (
@@ -23,34 +25,43 @@ export default function Home() {
   };
 
   const getAntrian = async () => {
-    const response = await axios.get("/api/queue");
-    if (response) {
-      setContents(response.data.data);
-    }
+    try {
+      const response = await axios.get("/api/queue");
+      if (response) {
+        setContents(response.data.data);
+      }
+    } catch (error) {}
   };
 
   const setStatus = async (dataId, status) => {
     setLoading(true);
-    try {
-      const response = await axios.post("/api/status", {
-        id: dataId,
-        status: status,
-      });
-      if (response) {
-        const updateData = contents.map((item) => {
-          return item.id == dataId ? { ...item, status: status } : item;
+    if (authUser?.contents.username == "admin") {
+      try {
+        const response = await axios.post("/api/status", {
+          id: dataId,
+          status: status,
         });
-        setContents(updateData);
+        if (response) {
+          const updateData = contents.map((item) => {
+            return item.id == dataId ? { ...item, status: status } : item;
+          });
+          setContents(updateData);
+          setLoading(false);
+          toaster.notify(response.data.message, {
+            position: "bottom-right",
+          });
+        }
+      } catch (error) {
         setLoading(false);
-        toaster.notify(response.data.message, {
+        toaster.notify(error.response.data.message, {
           position: "bottom-right",
         });
       }
-    } catch (error) {
-      setLoading(false);
-      toaster.notify(error.response.data.message, {
+    } else {
+      toaster.notify("Mohon maaf fungsi ini di batasi untuk user tertentu", {
         position: "bottom-right",
       });
+      setBtnLoading(false);
     }
   };
 
@@ -185,19 +196,26 @@ export default function Home() {
 
     const handleSave = async () => {
       setBtnLoading(true);
-      try {
-        const response = await axios.post("/api/queue", data);
-        if (response) {
-          getAntrian();
-          setBtnLoading(false);
-          toaster.notify("Antrian berhasil di buat", {
+      if (authUser?.contents.username == "admin") {
+        try {
+          const response = await axios.post("/api/queue", data);
+          if (response) {
+            getAntrian();
+            setBtnLoading(false);
+            toaster.notify("Antrian berhasil di buat", {
+              position: "bottom-right",
+            });
+          }
+        } catch (r) {
+          console.log(r.response.data.errors);
+          setErrors(r.response.data.errors);
+          toaster.notify("Data tidak boleh kosong", {
             position: "bottom-right",
           });
+          setBtnLoading(false);
         }
-      } catch (r) {
-        console.log(r.response.data.errors);
-        setErrors(r.response.data.errors);
-        toaster.notify("Data tidak boleh kosong", {
+      } else {
+        toaster.notify("Mohon maaf fungsi ini di batasi untuk user tertentu", {
           position: "bottom-right",
         });
         setBtnLoading(false);

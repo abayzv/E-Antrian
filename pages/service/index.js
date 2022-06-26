@@ -6,15 +6,19 @@ import DataTable from "react-data-table-component";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toaster from "toasted-notes";
+import { authUserState } from "../../store/auth";
 
 export default function Home() {
   const [service, setService] = useState([]);
+  const authUser = useRecoilValueLoadable(authUserState);
 
   const getService = async () => {
-    const response = await axios.get("/api/service");
-    if (response) {
-      setService(response.data.data);
-    }
+    try {
+      const response = await axios.get("/api/service");
+      if (response) {
+        setService(response.data.data);
+      }
+    } catch (err) {}
   };
 
   const Modal = () => {
@@ -28,18 +32,25 @@ export default function Home() {
 
     const handleSave = async () => {
       setBtnLoading(true);
-      try {
-        const response = await axios.post("/api/service", data);
-        if (response) {
-          getService();
-          setBtnLoading(false);
-          toaster.notify(response.data.message, {
+      if (authUser?.contents.username == "admin") {
+        try {
+          const response = await axios.post("/api/service", data);
+          if (response) {
+            getService();
+            setBtnLoading(false);
+            toaster.notify(response.data.message, {
+              position: "bottom-right",
+            });
+          }
+        } catch (r) {
+          setErrors(r.response.data.errors);
+          toaster.notify(r.response.data.message, {
             position: "bottom-right",
           });
+          setBtnLoading(false);
         }
-      } catch (r) {
-        setErrors(r.response.data.errors);
-        toaster.notify(r.response.data.message, {
+      } else {
+        toaster.notify("Mohon maaf fungsi ini di batasi untuk user tertentu", {
           position: "bottom-right",
         });
         setBtnLoading(false);
@@ -54,7 +65,6 @@ export default function Home() {
           setData(newData);
         }
       });
-      console.log(data);
     };
 
     return (
@@ -182,16 +192,23 @@ export default function Home() {
 
     const handleDelete = async () => {
       setBtnLoading(true);
-      try {
-        const response = await axios.delete(`/api/service/${props.id}`);
-        if (response) {
-          getService();
+      if (authUser?.contents.username == "admin") {
+        try {
+          const response = await axios.delete(`/api/service/${props.id}`);
+          if (response) {
+            getService();
+            setBtnLoading(false);
+            toaster.notify(response.data.message, {
+              position: "bottom-right",
+            });
+          }
+        } catch (r) {
           setBtnLoading(false);
-          toaster.notify(response.data.message, {
-            position: "bottom-right",
-          });
         }
-      } catch (r) {
+      } else {
+        toaster.notify("Mohon maaf fungsi ini di batasi untuk user tertentu", {
+          position: "bottom-right",
+        });
         setBtnLoading(false);
       }
     };

@@ -13,11 +13,12 @@ export default function Dashboard() {
   const [dataAdmin, setDataAdmin] = useState([]);
 
   const getDataAdmin = async () => {
-    const response = await axios.get("/api/admin");
-    if (response) {
-      setDataAdmin(response.data);
-      console.log(dataAdmin);
-    }
+    try {
+      const response = await axios.get("/api/admin");
+      if (response) {
+        setDataAdmin(response.data);
+      }
+    } catch (error) {}
   };
 
   const addChartDataToSeries = () => {

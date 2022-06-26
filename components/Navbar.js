@@ -11,9 +11,11 @@ export default function Navbar() {
   const setAuthCheck = useSetRecoilState(authCheckState);
   const authUser = useRecoilValueLoadable(authUserState);
   const logoutHandler = async () => {
-    await axios.post("/logout");
-    setAuthCheck(false);
-    router.replace("/login");
+    try {
+      await axios.post("/logout");
+      setAuthCheck(false);
+      router.replace("/login");
+    } catch (error) {}
   };
 
   useEffect(() => {}, [authUser.contents]);
@@ -87,11 +89,11 @@ export default function Navbar() {
                         static
                         className="py-1 absolute w-56 right-0 bg-white rounded-lg border shadow-sm overflow-hidden mt-1"
                       >
-                        <Link href={`/${authUser.contents.username}`}>
+                        {/* <Link href={`/${authUser.contents.username}`}>
                           <a className="block px-4 py-2 hover:bg-rose-500 hover:text-white transition-colors duration-200">
                             View Profile
                           </a>
-                        </Link>
+                        </Link> */}
                         <Link href="/settings/profile">
                           <a className="block px-4 py-2 hover:bg-rose-500 hover:text-white transition-colors duration-200">
                             Update Profile

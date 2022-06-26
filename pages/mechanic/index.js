@@ -10,10 +10,12 @@ export default function Home() {
   const [mechanic, setMechanic] = useState([]);
 
   const getMechanic = async () => {
-    const response = await axios.get("/api/mechanic");
-    if (response) {
-      setMechanic(response.data.data);
-    }
+    try {
+      const response = await axios.get("/api/mechanic");
+      if (response) {
+        setMechanic(response.data.data);
+      }
+    } catch (error) {}
   };
 
   const isReady = (id) => {
