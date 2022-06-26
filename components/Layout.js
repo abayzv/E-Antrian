@@ -137,9 +137,11 @@ export default function Layout({ title, children, middleware }) {
                 : "You need to verify your email address before continue."}
             </button>
           )}
-        <Navbar />
-        <div className="pt-5 min-h-screen md:pt-10">{children}</div>
-        <footer className="mt-5 p-3 bg-white text-center">
+        <div className="min-h-screen flex flex-col">
+          <Navbar />
+          <div className="pt-5 flex-grow relative md:pt-10">{children}</div>
+        </div>
+        <footer className="mt-10 p-3 bg-white text-center">
           Copyright @Mahesadev 2022
         </footer>
       </div>

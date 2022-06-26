@@ -35,22 +35,22 @@ export default function Navbar() {
             </Link>
             <Link href="/customer">
               <a className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200">
-                Customer
+                Pelanggan
               </a>
             </Link>
             <Link href="/service">
               <a className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200">
-                Service
+                Servis
               </a>
             </Link>
             <Link href="/vehicle">
               <a className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200">
-                Vehicle
+                Kendaraan
               </a>
             </Link>
             <Link href="/mechanic">
               <a className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200">
-                Mechanic
+                Mekanik
               </a>
             </Link>
             <Link href="/queue">

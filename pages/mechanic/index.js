@@ -3,9 +3,59 @@ import Container from "../../components/Container";
 import Layout from "../../components/Layout";
 import DataTable from "react-data-table-component";
 import { getMechanic } from "../../store/mechanic";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Home() {
-  const { contents } = useRecoilValueLoadable(getMechanic);
+  const [mechanic, setMechanic] = useState([]);
+
+  const getMechanic = async () => {
+    const response = await axios.get("/api/mechanic");
+    if (response) {
+      setMechanic(response.data.data);
+    }
+  };
+
+  const isReady = (id) => {
+    const curentMecha = mechanic?.filter((item) => {
+      const result = item.id == id && item;
+      return result.data;
+    });
+    let numberOfProcess = 0;
+    const ready = curentMecha?.filter((item2) => {
+      const process = item2.data.map((item3) => {
+        if (item3.status == "process") {
+          numberOfProcess = numberOfProcess + 1;
+        }
+      });
+    });
+    if (numberOfProcess > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const totalServis = (id) => {
+    const curentMecha = mechanic?.filter((item) => {
+      const result = item.id == id && item;
+      return result.data;
+    });
+    let numberOfCompleted = 0;
+    const ready = curentMecha?.filter((item2) => {
+      const process = item2.data.map((item3) => {
+        if (item3.status == "completed") {
+          numberOfCompleted = numberOfCompleted + 1;
+        }
+      });
+    });
+    return numberOfCompleted;
+  };
+
+  useEffect(() => {
+    getMechanic();
+  }, []);
+
   return (
     <Layout middleware="auth" title="Kendaraan">
       <Container>
@@ -18,8 +68,8 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-wrap ">
-          {Array.isArray(contents) ? (
-            contents.map((item) => {
+          {mechanic.length > 0 ? (
+            mechanic.map((item) => {
               return (
                 <div key={item.id} className="w-1/4 p-1">
                   <div className="bg-white shadow-md p-2 rounded relative">
@@ -29,16 +79,19 @@ export default function Home() {
                     />
                     <div
                       className={`absolute top-0 right-0 text-white rounded text-sm ${
-                        item.isReady == true ? "bg-green-500" : "bg-red-500"
+                        isReady(item.id) == true ? "bg-green-500" : "bg-red-500"
                       } p-1 px-2`}
                     >
-                      {item.isReady == true ? "Ready" : "Working"}
+                      {isReady(item.id) == true ? "Ready" : "Working"}
                     </div>
                     <div className="bg-red-200 p-1 px-2">
                       Nama : {item.name}
                     </div>
                     <div className="bg-gray-200 p-1 px-2">
                       Nomor HP : {item.phone}
+                    </div>
+                    <div className="bg-green-200 p-1 px-2">
+                      Total Servis : {totalServis(item.id)}
                     </div>
                   </div>
                 </div>
