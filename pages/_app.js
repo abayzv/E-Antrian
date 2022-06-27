@@ -2,7 +2,7 @@ import "tailwindcss/tailwind.css";
 import "toasted-notes/src/styles.css";
 import { RecoilRoot } from "recoil";
 import axios from "axios";
-axios.defaults.baseURL = "http://localhost:8000/";
+axios.defaults.baseURL = "https://antrian.mahesadev.com/";
 axios.defaults.withCredentials = true;
 
 function MyApp({ Component, pageProps }) {
