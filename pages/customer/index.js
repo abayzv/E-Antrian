@@ -32,7 +32,7 @@ export default function Home() {
 
     const handleSave = async () => {
       setBtnLoading(true);
-      if (authUser?.contents.username == "admin") {
+      if (authUser?.contents.user.username == "admin") {
         try {
           const response = await axios.post("/api/customer", data);
           if (response) {
@@ -204,7 +204,7 @@ export default function Home() {
 
     const handleDelete = async () => {
       setBtnLoading(true);
-      if (authUser?.contents.username == "admin") {
+      if (authUser?.contents.user.username == "admin") {
         try {
           const response = await axios.delete(`/api/customer/${props.id}`);
           if (response) {
@@ -334,7 +334,7 @@ export default function Home() {
       cell: (row) => (
         <>
           <img
-            class="rounded-full w-6 h-6"
+            className="rounded-full w-6 h-6"
             src="https://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&amp;s=150"
             alt="Admin"
           ></img>

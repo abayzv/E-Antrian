@@ -25,7 +25,7 @@ export default function Home() {
 
     const handleSave = async () => {
       setBtnLoading(true);
-      if (authUser?.contents.username == "admin") {
+      if (authUser?.contents.user.username == "admin") {
         try {
           const response = await axios.post("/api/vehicle", data);
           if (response) {
@@ -58,7 +58,6 @@ export default function Home() {
           setData(newData);
         }
       });
-      console.log(data);
     };
 
     return (
@@ -219,11 +218,10 @@ export default function Home() {
 
     const handleDelete = async () => {
       setBtnLoading(true);
-      if (authUser?.contents.username == "admin") {
+      if (authUser?.contents.user.username == "admin") {
         try {
           const response = await axios.delete(`/api/vehicle/${props.id}`);
           if (response) {
-            console.log(response);
             getVehicle();
             setBtnLoading(false);
             toaster.notify(response.data.message, {

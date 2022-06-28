@@ -9,16 +9,19 @@ import { Popover, Transition } from "@headlessui/react";
 export default function Navbar() {
   const router = useRouter();
   const setAuthCheck = useSetRecoilState(authCheckState);
-  const authUser = useRecoilValueLoadable(authUserState);
+  const authUser = JSON.parse(localStorage.getItem("user"));
   const logoutHandler = async () => {
     try {
-      await axios.post("/logout");
-      setAuthCheck(false);
+      localStorage.removeItem("user");
       router.replace("/login");
     } catch (error) {}
   };
 
-  useEffect(() => {}, [authUser.contents]);
+  if (Date.now() > authUser?.expiry) {
+    localStorage.removeItem("user");
+  }
+
+  useEffect(() => {}, []);
   return (
     <nav className="border-b py-3 bg-white">
       <div className="max-w-screen-lg mx-auto">
@@ -55,13 +58,13 @@ export default function Navbar() {
                 Mekanik
               </a>
             </Link>
-            <Link href="/queue">
+            <a href="/queue">
               <a className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200">
                 Antrian
               </a>
-            </Link>
+            </a>
           </div>
-          {authUser.contents && authUser.state === "hasValue" ? (
+          {authUser?.user ? (
             <div className="flex items-center z-50">
               <Popover className="relative">
                 {({ open }) => (
@@ -70,11 +73,11 @@ export default function Navbar() {
                       <div className="flex-shrink-0 mr-3">
                         <img
                           className="rounded-full w-6 h-6"
-                          src={authUser.contents.picture}
-                          alt={authUser.contents.name}
+                          src={authUser?.user.picture}
+                          alt={authUser?.user.name}
                         />
                       </div>
-                      <span>{authUser.contents.name}</span>
+                      <span>{authUser?.user.name}</span>
                     </Popover.Button>
                     <Transition
                       show={open}
@@ -94,7 +97,7 @@ export default function Navbar() {
                             View Profile
                           </a>
                         </Link> */}
-                        <Link href="/settings/profile">
+                        {/* <Link href="/settings/profile">
                           <a className="block px-4 py-2 hover:bg-rose-500 hover:text-white transition-colors duration-200">
                             Update Profile
                           </a>
@@ -103,10 +106,10 @@ export default function Navbar() {
                           <a className="block px-4 py-2 hover:bg-rose-500 hover:text-white transition-colors duration-200">
                             Update Password
                           </a>
-                        </Link>
+                        </Link> */}
                         <button
                           onClick={logoutHandler}
-                          className="focus:outline-none block px-4 py-2 hover:bg-rose-500 hover:text-white transition-colors duration-200 w-full text-left"
+                          className="focus:outline-none block px-4 py-2 hover:bg-red-500 hover:text-white transition-colors duration-200 w-full text-left"
                         >
                           Logout
                         </button>
@@ -119,15 +122,15 @@ export default function Navbar() {
           ) : (
             <div className="flex items-center">
               <Link href="/login">
-                <a className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200">
+                <a className="block bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-300 font-medium transition duration-200">
                   Login
                 </a>
               </Link>
-              <Link href="/register">
+              {/* <Link href="/register">
                 <a className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium transition duration-200">
                   Register
                 </a>
-              </Link>
+              </Link> */}
             </div>
           )}
         </div>

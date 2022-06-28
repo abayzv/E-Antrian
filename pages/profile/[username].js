@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRecoilValueLoadable } from "recoil";
 import { authUserState } from "../../store/auth";
 export default function User({ user }) {
-  const authUser = useRecoilValueLoadable(authUserState);
+  const authUser = JSON.parse(localStorage.getItem("user"));
   return (
     <Layout title={user.name}>
       <Container>

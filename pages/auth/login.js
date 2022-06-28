@@ -7,25 +7,41 @@ import axios from "axios";
 import { useSetRecoilState } from "recoil";
 import { authCheckState } from "../../store/auth";
 import { useRouter } from "next/router";
+import toaster from "toasted-notes";
+import { now } from "moment-timezone";
 export default function Login() {
   const [errors, setErrors] = useState([]);
+  const [isLoading, setLoading] = useState(false);
   const setAuth = useSetRecoilState(authCheckState);
   const router = useRouter();
   const [form, setForm] = useState({
     email: "",
     password: "",
-    remember: "",
   });
   const submitHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await axios.get("sanctum/csrf-cookie");
-      await axios.post("login", form);
-      setAuth(form);
+      const response = await axios.post("api/login", form);
+      toaster.notify(response.data.message, {
+        position: "bottom-right",
+      });
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          user: response.data.data,
+          expiry: Date.now() + 1 * 1000 * 60 * 60 * 24,
+        })
+      );
       router.replace("/dashboard");
     } catch (r) {
+      toaster.notify(r.response.data.message, {
+        position: "bottom-right",
+      });
       setErrors(r.response.data.errors);
+      setLoading(false);
     }
+    setLoading(false);
   };
   return (
     <Layout middleware="guest" title="Login">
@@ -33,7 +49,7 @@ export default function Login() {
         <Card
           header={
             <>
-              <h1 className="text-gray-800 text-xl font-semibold">Login</h1>
+              <h1 className="text-gray-800 text-xl font-semibold">Masuk</h1>
               <p className="text-sm text-gray-500">
                 Silahkan masukan email dan password untuk melanjutkan
               </p>
@@ -87,7 +103,13 @@ export default function Login() {
                 <a className="text-blue-500 hover:underline">Forgot Password</a>
               </Link> */}
             </div>
-            <Button>Login</Button>
+            {isLoading ? (
+              <Button color="bg-gray-500" disabled>
+                Silahkan Tunggu
+              </Button>
+            ) : (
+              <Button color="bg-gray-900">Masuk</Button>
+            )}
           </form>
         </Card>
       </div>

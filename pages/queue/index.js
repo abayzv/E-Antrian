@@ -17,6 +17,7 @@ export default function Home() {
   const data = useRecoilValueLoadable(getQueue);
   const [isLoading, setLoading] = useState(false);
   const authUser = useRecoilValueLoadable(authUserState);
+  const [number, setNumber] = useState(0);
 
   const pad = (number, digits) => {
     return (
@@ -29,13 +30,14 @@ export default function Home() {
       const response = await axios.get("/api/queue");
       if (response) {
         setContents(response.data.data);
+        setNumber(response.data.start_queue);
       }
     } catch (error) {}
   };
 
   const setStatus = async (dataId, status) => {
-    setLoading(true);
-    if (authUser?.contents.username == "admin") {
+    if (authUser?.contents.user.username == "admin") {
+      setLoading(true);
       try {
         const response = await axios.post("/api/status", {
           id: dataId,
@@ -61,7 +63,6 @@ export default function Home() {
       toaster.notify("Mohon maaf fungsi ini di batasi untuk user tertentu", {
         position: "bottom-right",
       });
-      setBtnLoading(false);
     }
   };
 
@@ -152,7 +153,6 @@ export default function Home() {
     const service = useRecoilValueLoadable(getService);
     const mechanic = useRecoilValueLoadable(getMechanic);
     const [btnLoading, setBtnLoading] = useState(false);
-    const [number, setNumber] = useState(0);
     const [errors, setErrors] = useState([]);
     const [isDisabled, setDisabled] = useState(true);
     const [data, setData] = useState({
@@ -161,7 +161,7 @@ export default function Home() {
       mechanic_id: null,
       vehicle_id: null,
       status: "pending",
-      number: null,
+      number: number,
     });
 
     //   const lastAntrian = antrian?.contents.filter((item)=>{
@@ -196,7 +196,7 @@ export default function Home() {
 
     const handleSave = async () => {
       setBtnLoading(true);
-      if (authUser?.contents.username == "admin") {
+      if (authUser?.contents.user.username == "admin") {
         try {
           const response = await axios.post("/api/queue", data);
           if (response) {
@@ -223,7 +223,6 @@ export default function Home() {
     };
 
     useEffect(() => {
-      compareDate();
       setTimeout(() => {
         setDisabled(false);
       }, 3000);
@@ -237,7 +236,6 @@ export default function Home() {
           setData(newData);
         }
       });
-      console.log(data);
     };
 
     return (

@@ -32,7 +32,7 @@ export default function Home() {
 
     const handleSave = async () => {
       setBtnLoading(true);
-      if (authUser?.contents.username == "admin") {
+      if (authUser?.contents.user.username == "admin") {
         try {
           const response = await axios.post("/api/service", data);
           if (response) {
@@ -192,7 +192,7 @@ export default function Home() {
 
     const handleDelete = async () => {
       setBtnLoading(true);
-      if (authUser?.contents.username == "admin") {
+      if (authUser?.contents.user.username == "admin") {
         try {
           const response = await axios.delete(`/api/service/${props.id}`);
           if (response) {

@@ -1,12 +1,13 @@
-import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useRecoilValueLoadable } from "recoil";
+import { useSetRecoilState } from "recoil";
 import useVerifyEmail from "../hooks/useVerifyEmail";
 import { authUserState } from "../store/auth";
 import Navbar from "./Navbar";
+import React from "react";
+import dynamic from "next/dynamic";
 
 const Loader = () => {
   return (
@@ -95,27 +96,25 @@ const Loader = () => {
   );
 };
 
-export default function Layout({ title, children, middleware }) {
+const Layout = ({ title, children, middleware }) => {
   const router = useRouter();
-  const authUser = useRecoilValueLoadable(authUserState);
+  const authUser = JSON.parse(localStorage.getItem("user"));
+  const setUserAuth = useSetRecoilState(authUserState);
   const { resendEmailVerification, loading } = useVerifyEmail();
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
-    if (middleware === "auth" && authUser.contents == null) {
+    if (middleware === "auth" && authUser == null) {
       router.replace("/login");
     } else {
+      setUserAuth(authUser);
       setInterval(() => {
         setLoading(false);
       }, 500);
     }
-    if (
-      middleware === "guest" &&
-      authUser.state === "hasValue" &&
-      authUser.contents
-    ) {
+    if (middleware === "guest" && authUser?.user !== null && authUser) {
       router.replace("/dashboard");
     }
-  }, [authUser.contents]);
+  }, []);
 
   if (isLoading) {
     return <Loader />;
@@ -125,18 +124,6 @@ export default function Layout({ title, children, middleware }) {
         <Head>
           <title>{title || "Toska"}</title>
         </Head>
-        {authUser.contents &&
-          authUser.state === "hasValue" &&
-          !authUser.contents.has_verified && (
-            <button
-              onClick={resendEmailVerification}
-              className="focus:outline-none px-4 py-4 text-white bg-rose-500 hover:bg-rose-600 transition-colors duration-200 w-full"
-            >
-              {loading
-                ? "Loading . . ."
-                : "You need to verify your email address before continue."}
-            </button>
-          )}
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <div className="pt-5 flex-grow relative md:pt-10">{children}</div>
@@ -147,4 +134,8 @@ export default function Layout({ title, children, middleware }) {
       </div>
     );
   }
-}
+};
+
+export default dynamic(() => Promise.resolve(Layout), {
+  ssr: false,
+});

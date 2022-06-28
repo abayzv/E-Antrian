@@ -77,7 +77,7 @@ export default function Home() {
                   <div className="bg-white shadow-md p-2 rounded relative">
                     <img
                       className="w-full h-40 object-cover"
-                      src={`http://localhost:8000/${item.imageUrl}`}
+                      src={`${item.imageUrl}`}
                     />
                     <div
                       className={`absolute top-0 right-0 text-white rounded text-sm ${
